@@ -1,0 +1,21 @@
+elasticsearch is a opensource, distributed, restful, json-based serach engine
+
+ELK is mainly for logs search, analysis and visulize data in real time(no sql db), in nosql dbs data will be stored in json format
+
+elasticsearch is json documnet oriented storage
+
+Elastic stack components:
+------------
+1) elasticsearch:  Stores data in elasticsearch
+2)Logstash: data pipeline, reads data from diferrent sources and also writes ans it also filters input data before sending it to output.
+3)kibana: gui
+4)beats: lightweight data shippers sits on different remote servers and send data to elasticsearch directly or via log statsh
+        file beat, metric beat, auditbeat, packet beat(n/w data), heartbeat, functionbeat(serverless)
+
+Apache lucene is text search engines runs in the backend of elasticsearch, written in java
+
+restapi is referred as restful webservices based on REST(representational state transfer) using httpd protocol, data uses is json data
+
+xpack is an elastic stack extensionthat provides security, alerting, monitoring, reporting, machine learning......
+
+(((  45:00  )))
