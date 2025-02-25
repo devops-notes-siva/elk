@@ -1,0 +1,101 @@
+ELK -> elasticsearch, Logstash & kibana
+EFK -> elasticsearch, fluent & kibana
+
+elasticsearch is a anlytics full text search engine for huge data and uses - application logs & system metrics like cpu errors, memory errors and will pass to kibana and analyze these errors(APM) and also to create events like no of clicks to url, slaes....
+
+Elasticsearch written in java and built on lucene(apache tool)
+
+ELK statck means --> elasticsearch, logstash, kibana. beats , x-pack
+
+logstash is data processing pipeline
+
+In elasticsearch there is jdbc driver which uses http library to connect with web-application
+
+Elasticsearch stores data as documents. and data should be in json format
+
+Ex:
+Comapny
+ {
+   "name" : "tt"
+   "country" : "india"
+}
+
+In elasticserach above data stores in below format with fields as shown.
+
+{
+ "-index" : "comapny"
+ "_type" : "doc"
+ "_id" : "1234"
+ "_version" : "v1"
+ "_source" :   //acutual data stoes under source
+   {
+     "name" : "tt"
+     "country" : "india"
+   }
+}
+
+All documents stores under index and index has so many similar data docs as json objects
+
+Below jason fomrat is example where we have ran from kiban dash boards under dev tools, these commands talks with rest api and uses http protocal:
+
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+GET /_cluster/health
+GET /_cat/nodes?v
+GET /_cat/indices?v
+
+
+CLI commands directly in console:
+-----------------------------------
+curl -X GET 'http://localhost:9200'
+
+curl --insecure/-k -X GET 'https://localhost:9200'
+
+while installing elasticsearch we will get default cert need to configfure that
+
+curl --cacert /etc/elasticsearch/certs/http_ca.crt -u elastic -X GET 'https://localhost:9200' ( to avoid auth issue and cert issue)
+
+
+
+shards:
+-------
+small pieces of indices are called shards and shards are done at indices level only.
+shards are for horizontal scaling and each shard acts as independent index  (horizontal scaling - adding more machines to further distribute the load of the database and increase overall storage and/or processing power)
+
+shards has no defined size , because of shards performance will increase (throughput will increase)
+
+By default while creating single index it will create only one shard but in older versions before7 for one index 5 shards are created, with split APi we can increse no of shards and shrink API decrease no of shards
+
+Replication:
+==============
+It also doing on index level, it will create copy of shards with in that index. the shard which is going to copy is primary shard and copied is called replica shard and both are called replication group. replica shard behaves same as primary shard and no of replicas can be configured while creating index.
+The main advantage of replications are for high availability, it maintains replicas acrooss all nodes of cluster
+
+snapshots:
+========
+
+these are backups and can be restored to given point of time and can be configured at index level. Even we can entire cluster snapshot for backup purpose
+
+if index corrupted snapshots helps to replace
+
+
+
+To add index at kibana level:
+
+PUT /products
+GET /_cluster/helath
+GET /_cat/indices?v
+GET /_cat/shards?v
+
+if replica shards of indices are un-assigned(due to single node) then also cluster status shown as yellow.
+
+
+
+
+
+
+

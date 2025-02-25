@@ -1,0 +1,26 @@
+Elasticsearch verion -  elasticsearch-8.10.4
+  for liferay 7.4
+1)Completely uninstall old elasticsearch  
+2)Download rpm file of elatic8
+3)install using rpm 
+    rpm --install elasticsearch8 rpm file
+	
+	service file will be created automatically, referesh daemon and enable elastic search service
+4)Configurations:
+    
+       in elasticsearch.yml file will update  
+	   
+	   cluster.name: LiferayElasticsearchCluster
+		node.name: d2l00222g.dc02.its.hpecorp.net
+		path.data: /opt/cloudhost/elasticsearch/data/elasticsearch
+		path.logs: /opt/cloudhost/elasticsearch/log/elasticsearch
+		network.host: 0.0.0.0
+		xpack.security.enabled: false
+		
+5)to setup liferay plugins -> /usr/share/elasticsearch
+  under bin folder, run below commands:
+        ./elasticsearch-plugin install analysis-icu
+		./elasticsearch-plugin install analysis-kuromoji
+		./elasticsearch-plugin install analysis-smartcn
+		./elasticsearch-plugin install analysis-stempel
+    

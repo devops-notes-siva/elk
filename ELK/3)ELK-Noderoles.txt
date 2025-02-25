@@ -1,0 +1,37 @@
+To add one more elasticsearch in same existing server:
+----------------------------------------
+
+If we have installed existing elasticsearcxh with rpm we can not install another elasticsearch as rpm was installed by root user.
+To install another elasticsearch need to download tar file and extract it:
+==================================================
+  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.11.1-linux-x86_64.tar.gz
+  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.11.1-linux-x86_64.tar.gz.sha512
+  shasum -a 512 -c elasticsearch-8.11.1-linux-x86_64.tar.gz.sha512 
+  tar -xzf elasticsearch-8.11.1-linux-x86_64.tar.gz
+  cd elasticsearch-8.11.1/ 
+=================================================================================
+Go it bin folder and start elasticsearch but as this elasticsearch uses default folders for data and logs it won't workout. so use different folders elase use below command:
+
+   ./elasticsearch -Enode.name=node-2 -Epath.data=./node-2/data -Epath.logs=./node-2/logs &
+
+
+master node roles are to craete and delete indices, to make elasticsearch node as dedicated master node make below proprt to true else false
+  node.master: true
+
+dat anode: which always stores data, queries like search, performance will perform here, to make dedicated data node below is command
+    node.data: true
+
+Ingest node - this node is used for processing, manipulate, processing data. It acts like a logstash, if we are using logstash ingest node not required.
+    node.ingest: true(real time not recommended)
+
+machine learning:  node.ml: true -> acts like machine learning
+                   xpack.ml.enabled: true 
+
+to run any machine learning jobs we use above properties, it wont affect any other tasks
+
+co-ordination nodes:
+ uses is for distrubiyion of queries , logs aggregation if there huge nodes in cluster we will enable this feature
+in co-ordination node and all featrures like node.master, node.data, node.ingest, node.ml &  xpack.ml.enabled should make false then only it act like co-ordination node.
+
+
+voting_only node: used in very big clusters to elct master and data nodes

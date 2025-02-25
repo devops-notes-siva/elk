@@ -1,0 +1,172 @@
+CREATING INDICES WITH NO OF SHARDS AND REPLICAS:
+
+PUT /courses{
+ "settings": {
+   number_of_shards": 2,
+   number_of_replicas: 2
+ }
+}
+
+To careate docs inside index(index docs)
+----------------------------
+
+POST /courses/_doc
+{
+ "name" : "elastic"
+ "price" : "1000"
+}
+
+reult is like below:
+{
+  "_index": "courses",
+  "_id": "drGjP4wBY3pt5DR2Y3OQ",
+  "_version": 1,
+  "result": "created",
+  "_shards": {
+    "total": 3,
+    "successful": 1,
+    "failed": 0
+  },
+  "_seq_no": 0,
+  "_primary_term": 1
+}
+
+elasticserch creates above index with id,,, action.auto_create_index- this will crete indices automatically
+
+
+14:00 ---->
+to create our own id:
+--------------------
+
+POST /courses/_doc/1000023
+{
+ "name" : "devops"
+ "price" : "1000"
+}
+
+To retrive docs with id no:
+--------------------------
+GET /courses/_doc/1000023
+
+To update doc:
+---------------
+POST /courses/_update/1000023
+{
+  "doc" : {
+   "name" : "devops"
+ "price" : 10  //updated this
+ }
+}
+
+
+when  ever we do updates in elasticsearch docs in backend will replaced they wont update, docs in elaticsearch are immutable
+
+Intead of upddate docs everytime we can use script
+--------------------------------------------------- 
+
+POST /courses/_update/1000023
+{
+  "script" : {
+   "source" : "ctx._source.price--"  //it will reduce by 1 and new price will be 9 and also we can assign              // values  directly
+ }
+}
+
+by using parameters:
+
+POST /courses/_update/1000023
+{
+  "script" : {
+   "source" : "ctx._source.price += params.price" //increse 100 by everytime
+   "params"  : {
+      "price" : 100
+   }
+ }
+}
+
+
+upserts:
+==========
+
+It is used for creating or update of docs
+
+POST /courses/_update/100 //new doc id
+{
+  "script" : {
+   "source" : "ctx._source.price += params.price" //increse 100 by everytime
+   "params"  : {
+      "price" : 120
+   }
+ }
+ "upsert" : {
+   "name" : "linux",
+   "price" : 70
+ }
+}
+
+
+to replace any value in doc instead of update:
+-------------------------------------------
+
+PUT /courses/_doc/100
+{
+  "name" : "admins",
+  "price": 231
+}
+
+
+To delete any doc:
+----------------
+
+DLETE /courses/_doc/100
+
+Complete commands:
+====================
+# Click the Variables button, above, to create your own variables.
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET /_cat/indices?v
+
+PUT /courses
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 2
+  }
+}
+
+DELETE /courses
+
+
+POST /courses/_doc 
+{
+  "name" : "devops",
+  "fees" : 1000
+}
+
+
+POST /courses/_doc/10789
+{
+  "name" : "elk",
+  "fees" : 1908
+}
+
+
+
+POST /courses/_update/10789
+{
+  "doc" : {
+    "name" : "elk",
+    "fees" : 10023,
+    "tags" : ["devops courseeee"]  //as list format
+    
+  }
+  
+}
+
+
+GET /courses/_doc/10789

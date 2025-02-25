@@ -1,0 +1,67 @@
+ss3 -
+
+elasticsearch:
+elasticsearch should start with kibana user inside bin folder
+command - sh elasticsearch &
+
+logstash:
+root user from bin folder
+command - sh logstash -f ../config/logstash-json.conf &
+
+kibana:
+root user from bin folder:
+command - ./kibana --allow-root &
+
+to check kibana service in backend command is:
+netstat -tlnup and port no is 5601 
+
+for remaining services grep service names
+
+
+in tomcat -st1 server filebeat should be up and running to load logs in kibana server(ss3)
+
+to check filebeat service grep using service name
+as root user to start filebeat command is - "nohup ./filebeat -e -c filebeat.yml &"  at path /opt/cloudhost1/filebeat-7.2.0
+
+
+URL:
+
+		
+https://dxp.stg.kibana.it.hpe.com	username: prp	
+	Passwd: Passw0rd@123	
+	
+	
+	=========================
+	
+	https://www.elastic.co/downloads/past-releases/filebeat-7-2-0
+	
+	wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.2.0-x86_64.rpm
+	wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.2.0-x86_64.rpm.sha512
+	
+	shasum -a 512 -c filebeat-7.2.0-x86_64.rpm.sha512
+	
+	install filebeat-7.2.0 in st2 and st3 and chage below properties in /opt/cloudhost1/filebeat-7.2.0/filebeat.yml file
+	
+	 paths:
+    #- /var/log/*.log
+    - /opt/cloudhost/liferay-tomcat/liferay_instance1/tomcat-8.0.32/logs/catalina.out
+    - /opt/cloudhost/liferay-tomcat/liferay_instance2/tomcat-8.0.32/logs/catalina.out
+    - /opt/cloudhost/liferay-tomcat/liferay_instance3/tomcat-8.0.32/logs/catalina.out
+	
+	
+	fields:
+    env: prpstaging0  --> env name
+  
+  
+	 
+	 # The Logstash hosts
+     hosts: ["16.231.24.125:5044"] --> logstatsh hosts(ss3)
+	 
+	 =======================
+	 
+	 In ss3 where kiban installed:
+	 
+	 elasticsearch.hosts: ["http://16.231.24.125:9200"]
+	 
+	 
+

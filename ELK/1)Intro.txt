@@ -1,0 +1,161 @@
+media.sundog-soft.com/es8/install.txt
+------------------------------
+Installation steps of elasticsearch on ubuntu machine:
+
+
+# Download and install the public signing key:
+
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+
+
+# Install the apt-transport-https packages
+
+sudo apt-get install apt-transport-https
+
+# Save the repository definition
+
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+
+
+# Install the Elasticsearch Debian package
+
+sudo apt-get update && sudo apt-get install elasticsearch
+
+
+# Configure Elasticsearch and Disable Security. V8 comes with security enabled
+
+sudo nano /etc/elasticsearch/elasticsearch.yml
+
+
+node.name:  node-1
+
+
+network.host: 0.0.0.0
+
+discovery.seed.hosts: ["127.0.0.1"]
+
+xpack.security.enabled: false
+
+cluster.initial_master_nodes: ["node-1"]
+
+
+# Increase default timeout for Elasticsearch start operation. Running Elasticsearch can be slow on your laptop. 
+
+sudo nano /lib/systemd/system/elasticsearch.service
+
+TimeoutStartSec=600
+
+# Open another session and give permissions to read elasticsearch logs
+
+sudo chmod 755 -R /var/log/elasticsearch/
+
+# Configure Elasticsearch to start automatically when the system boots up
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable elasticsearch.service
+
+# Elasticsearch can be started as follows
+sudo /bin/systemctl start elasticsearch.service
+sudo /bin/systemctl status elasticsearch.service
+
+# install curl
+sudo apt-get install curl
+
+# Check that Elasticsearch is running
+curl -XGET 127.0.0.1:9200
+
+
+======================
+Download the shakespear data to search:
+
+sudo wget http://media.sundog-soft.com/es8/shakes-mapping.json
+
+to check " less shakes-mapping.json"
+
+index above data to elasticsearch using below command:
+
+curl -H "Content-Type: application/json" -XPUT 127.0.0.1/9200/shakespeare --data-binary  @shakes-mapping.json
+
+
+
+Elasticserarch process json requests , elasticsearch can be used for much more than full text search now, and it can actually handle structure data and
+aggregate data very quickly. So, it's not just for search, you can handle structure data of any type and you'll see it's often used for things like aggregating logs and things like that.
+kibana is a visualization tool on top of elasticsearch 
+logstash in the Beats framework, and these are ways of actually publishing data into elastic search 
+ 
+for example, a collection of web server logs coming in that you just want to feed into your search index over time automatically, FileBeat can just sit on your web servers and look for new
+log files and parse them out, structure them in the way that elastic search wants, and then feed them into your elastic search cluster as they come in. Logstash does much the same thing, it can also be used to
+push data around between your servers and elastic search, but often it's used sort of an intermediate step, so you have a very lightweight FileBeat client that would sit on your web servers, logstash would accept those and sort of collect them and pool them up for feeding into elastic search over time.
+
+
+X-pack.
+
+This is actually a paid add on offered by elastic.co, and it offers things like security and alerting and monitoring and reporting, features like that.
+It also contains some of the more advanced features that are just starting to make it into elastic search now, such as machine learning and graph exploration, so you can see that with X-Pack, elastic search starts to become a real competitor for much more complex and heavy weight systems like Flink and Spark.
+
+
+===
+
+we need to talk about rest and RESTful APIs,
+
+the reason is that elastic search is built on top of a RESTful interface and that means to communicate with elastic search,
+you need to communicate with it through http requests that adhere to a rest interface.
+
+
+METHOD: verb - GET, POST, PUT, DELETE..
+PROTOCAL: like HTTP(HTTP/1.1)
+HOST: web server host
+URL: resource being requested
+BODY:  extra data neede by server
+HEADERS: meta data like client info
+
+
+Rest stands for a representational state transfer,
+
+ the way we're going to interact with elastic search is just using the curl command on a command line.
+
+Structure looks like below:
+ curl -H "Content-Type: application/json" <URL> -d <BODY>
+
+ -H, followed by any headers you need to send, and for elastic search that will always be content type of application slash json, meaning that whatever is in the body is going to be interpreted as json format,
+
+That'll be followed by the URL, which contains both the host that you're saying this request to, and in this course that will usually be the local host 127.0.0.1, followed by any information
+that the server will need to actually fulfill that request. So, you know, what index do I want to talk to, what data type, what sort of command am I asking it to do?
+And finally, we will pass  -d, and then the actual message body within quotes that will be json formatted data with additional information that the service needs to actually figure out what to give back to
+you or what to insert into elastic search.
+
+Examples of GET and PUT requests:
+-------------------
+
+curl -H "Content-Type: application/json" -XGET '127.0.0.1:9200/shakespear/_search?pretty' -d 
+'
+{
+ "query" : {
+     "match_pharse" : {
+		"text_entry" : "to be or to not be"
+	}
+  }
+}
+'
+
+
+curl -H "Content-Type: application/json" -XPUT '127.0.0.1:9200/movies/movie/109487' -d
+'
+{
+  "genere" : ["IMAX", "Sci-fi"],
+  "title" : "Interstellar",
+  "year" : 2014
+}
+'
+
+===
+
+elastic search works on top of Json formatted data.If you're familiar with Json, it's basically just a way of encoding structured data that may contain strings or numbers or dates or what have you,
+Now every document can have a unique I.D. and you can either explicitly assign a unique I.D. to it yourself,or allow elastic search to assign it for you.
+
+The second concept is the Index. An index is the highest level entity that you can query against an elastic search, and it can contain a collection of documents.
+So again bringing this back to an analogy of a database, you can think of an index as a database table and a document as a row in that table.
+you can only have one type of document within a single index .
+
+
+
+           
